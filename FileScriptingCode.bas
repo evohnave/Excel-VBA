@@ -90,3 +90,106 @@ Debug.Print i & "=" & FileList(i)
 Next i
 
 End Sub
+
+Function ReferenceLister(ByRef RefList() As Variant) As Variant
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''                                                                           ''
+''  This requires the VBE to be trusted                                      ''
+''    This is done in the Trust Center                                       ''
+''                                                                           ''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+''                                                                           ''
+''  This function will pass back a nx3 array RefList() of references in the  ''
+''    VBE Project.  If there are no references it will return a value of     ''
+''    FALSE.  Any errors also return FALSE.                                  ''
+''                                                                           ''
+''  RefList(,1) is .Name                                                     ''
+''  RefList(,2) is .FullPath                                                 ''
+''  RefList(,3) is .Description                                              ''
+''                                                                           ''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Dim i As Long
+
+On Error GoTo Err_Handler
+
+'Default value is TRUE
+ReferenceLister = True
+
+With Application.VBE.ActiveVBProject
+
+If Not (.References.Count > 0) Then GoTo Fn_False
+
+'OK, at least 1 reference
+ReDim RefList(1 To .References.Count, 1 To 3)
+
+For i = 1 To .References.Count
+    RefList(i, 1) = .References.Item(i).Name
+    RefList(i, 2) = .References.Item(i).FullPath
+    RefList(i, 3) = .References.Item(i).Description
+Next i
+
+End With
+
+GoTo Fn_Exit
+
+Err_Handler:
+'Uncomment the msgbox if you want to figure out a problem
+'MsgBox Prompt:="Error  = " & Err.Number & ", " & Err.Description, _
+'       Buttons:=vbOKOnly, _
+'       Title:="Error Generated!"
+
+Fn_False:
+ReferenceLister = False
+
+Fn_Exit:
+
+End Function
+
+Sub UseRefLister()
+
+Dim RefList() As Variant
+Dim result As Boolean
+Dim i As Long
+
+result = ReferenceLister(RefList)
+
+If result Then
+
+For i = 1 To UBound(RefList, 1)
+Debug.Print RefList(i, 1), RefList(i, 2), RefList(i, 3)
+Next i
+
+End If
+
+End Sub
+
+Function CheckRefDesc(strRefDesc As String) As Boolean
+
+'strRef is the description of a reference
+'  For example, Windows Script Host Object Model
+
+Dim RefList() As Variant
+Dim i As Long
+
+'Default value is FALSE
+CheckRefDesc = False
+
+If Not ReferenceLister(RefList) Then Exit Function
+'If you get here then there is at least one reference
+
+For i = 1 To UBound(RefList, 1)
+    If RefList(i, 3) = strRefDesc Then
+        CheckRefDesc = True
+        Exit Function
+    End If
+Next i
+
+End Function
