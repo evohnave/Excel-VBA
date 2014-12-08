@@ -1,0 +1,40 @@
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+
+On Error Resume Next
+
+Application.OnKey "+^{D}"
+Application.CommandBars("List Range Popup").Controls("Insert Date").Delete
+
+End Sub
+
+Private Sub Workbook_Open()
+
+On Error Resume Next
+
+Dim NewControl As CommandBarControl
+
+Application.OnKey "+^{D}", "DatePickerCode.OpenCalendar"
+
+Application.CommandBars("List Range Popup").Controls("Insert Date").Delete
+Application.CommandBars("Cell").Controls("Insert Date").Delete
+
+Set NewControl = _
+    Application.CommandBars("List Range Popup").Controls.Add(Before:=1)
+
+With NewControl
+    .Caption = "Insert Date"
+    .OnAction = "DatePickerCode.OpenCalendar"
+    .BeginGroup = True
+End With 'NewControl
+
+Set NewControl = _
+    Application.CommandBars("Cell").Controls.Add(Before:=1)
+
+With NewControl
+    .Caption = "Insert Date"
+    .OnAction = "DatePickerCode.OpenCalendar"
+    .BeginGroup = True
+End With 'NewControl
+
+End Sub
