@@ -1,0 +1,9 @@
+Sub OpenCalendar()
+
+UserForm1.Show
+
+End Sub
+
+Sub DateButton_Click(control As IRibbonControl)
+    OpenCaledar
+End Sub
