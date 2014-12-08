@@ -1,0 +1,27 @@
+Private Sub MyMonthView_DateClick(ByVal DateClicked As Date)
+
+On Error Resume Next
+
+Dim cell As Object
+
+For Each cell In Selection.Cells
+    cell.Value = DateClicked
+Next cell
+
+Unload.Me
+
+End Sub
+
+
+Private Sub UserForm_Initialize()
+
+'Matching the date in the calendar with the date
+'  of the active cell, if there is a date
+
+If IsDate(ActiveCell.Value) Then
+    Me.MyMonthView.Value = ActiveCell.Value
+Else
+    Me.MyMonthView.Value = Now
+End If
+
+End Sub
