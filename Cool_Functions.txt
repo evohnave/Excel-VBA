@@ -1,0 +1,2 @@
+You can count weekend dates between two dates with this formula, where B1>A1
+=SUM(INT((WEEKDAY(A1-{1,7})+B1-A1)/7))
